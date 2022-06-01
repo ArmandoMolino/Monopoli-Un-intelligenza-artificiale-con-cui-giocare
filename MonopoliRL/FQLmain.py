@@ -1,4 +1,4 @@
-#!/Users/Hossener/Documents/Programming/Python/MonopolyVenv/bin/python
+#!/Path to/MonopolyVenv/bin/python
 import glob
 import os
 import tarfile
@@ -115,48 +115,8 @@ def Training(model, stat, episodes=1000, start=0, print_info=100, save=False, sa
     return stat
 
 
-def Test(model, episodes=1000, start=0, print_info=100, save=False, save_step=0, render=False,
-         log=True):
-    stat = (Stat(episode, label=model))
-    for i_episode in range(start, start + episodes):
-        if i_episode % print_info == 0:
-            print("\rEpisode {}/{}.".format(i_episode - start, episodes))
-            sys.stdout.flush()
-        if save and (i_episode % save_step == 0):
-            Save(model, stat, i_episode)
-
-        observation = env.reset()
-        if render:
-            env.render()
-        action = model.policy(observation)
-        done = False
-        while not done:
-            observation, reward, done, msg = env.step(action)
-            if render:
-                env.render()
-            action = model.policy(observation)
-            stat.set_episode_lengths(i_episode)
-            stat.set_episode_rewards(i_episode, reward)
-            if log:
-                print(msg['AI'])
-                print(msg['player'])
-                print(msg['observation'])
-                print("\n")
-
-        if log:
-            print(msg['done'])
-
-        if not env.AI.CheckLose():
-            stat.set_win_block(env.AI.OwnedProprietyIDs)
-            stat.set_win_rate(env.AI.idPlayer)
-        if not env.player.CheckLose():
-            stat.set_win_rate(env.player.idPlayer)
-
-    return stat
-
-
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ls:ptr", ["load", "save=", "plot", "training", "render", "no_log"])
+    opts, args = getopt.getopt(sys.argv[1:], "ls:pr", ["load", "save=", "plot", "render", "no_log"])
 except getopt.GetoptError as err:
     print(err)
     sys.exit(2)
@@ -178,8 +138,6 @@ for o, a in opts:
         save_step = int(a)
     if o in ["-p", "--plot"]:
         plot = True
-    if o in ["-t", "--training"]:
-        training = True
     if o in ["-r", "--render"]:
         render = True
     if o in ["--no_log"]:
@@ -199,10 +157,7 @@ stat = (Stat(episode, label=model))
 if load:
     i = Load(model, stat)
 
-if training:
-    stat = Training(model, stat=stat, episodes=episode, start=i, save=save, save_step=save_step, render=render, log=log)
-else:
-    stat = Test(model, episodes=episode, save=save, save_step=save_step, render=render, log=log)
+stat = Training(model, stat=stat, episodes=episode, start=i, save=save, save_step=save_step, render=render, log=log)
 
 if save:
     Save(model, stat, episode)
