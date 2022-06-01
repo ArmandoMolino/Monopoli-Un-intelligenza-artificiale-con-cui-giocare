@@ -1,5 +1,5 @@
 # Monopoly-Reinforcement-Learning
-Usage: ./FQLmain.py [options] <episodes> <gamma> <alpha> <ee_rate>
+Usage: ./FQLmain.py (options) <episodes> <gamma> <alpha> <ee_rate>
 
 options:
   
