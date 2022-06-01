@@ -1,0 +1,77 @@
+{
+    "BlockSprites": [
+        "Monopoly/Board/Sprite/BlockSprite/Start.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Vicolo_Corto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Probabilita.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Vicolo_Stretto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Tassa_Lusso.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Stazione_Sud.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Bastioni_Gran_Sasso.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Imprevisto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Viale_Monterosa.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Viale_Vesuvio.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Prigione.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Via_Accademia.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Societa_Elettrica.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Corso_Ateneo.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Piazza_Universita.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Stazione_Ovest.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Via_Verdi.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Probabilita.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Corso_Raffaello.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Piazza_Dante.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Parcheggio.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Via_Marco_Polo.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Imprevisto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Corso_Magellano.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Largo_Colombo.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Stazione_Nord.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Viale_Costantino.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Viale_Traiano.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Societa_Acqua_Potaile.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Piazza_Giulio_Cesare.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/In_Prigione.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Via_Roma.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Corso_Impero.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Probabilita.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Largo_Augusto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Stazione_Est.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Imprevisto.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Viale_dei_Giardini.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Tassa_Lusso.xcf",
+        "Monopoly/Board/Sprite/BlockSprite/Parco_della_Vittoria.xcf"
+    ],
+    "PieceSprite": {
+        "red":
+        [
+            "Monopoly/Board/Sprite/PieceSprite/DiamondRed.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/DogRed.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/HatRed.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/ShoesRed.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/ThimbleRed.xcf"
+        ],
+
+        "blue":
+        [
+            "Monopoly/Board/Sprite/PieceSprite/DiamondBlue.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/DogBlue.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/HatBlue.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/ShoesBlue.xcf",
+            "Monopoly/Board/Sprite/PieceSprite/ThimbleBlue.xcf"
+        ]
+    },
+
+    "ButtonSprite": {
+        "red":
+        [
+            "Monopoly/Board/Sprite/ButtonSprite/ButtonRed.png",
+            "Monopoly/Board/Sprite/ButtonSprite/ButtonRedPressed.png"
+        ],
+
+        "blue":
+        [
+            "Monopoly/Board/Sprite/ButtonSprite/ButtonBlue.png",
+            "Monopoly/Board/Sprite/ButtonSprite/ButtonBluePressed.png"
+        ]
+    }
+}
