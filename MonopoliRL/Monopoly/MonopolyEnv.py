@@ -191,11 +191,12 @@ class env:
                 Proprietà del Player 1,
                 Case del Player1
                 Proprietà del Player 2,
+                Case del Player 2
             ]
         """
         lands = set([land.id for land in self.lands])
-        self.AI.OwnedProprietyIDs.sort()
-        self.player.OwnedProprietyIDs.sort()
+        self.AI.OwnedProprietyIDs.sort(reverse=True)
+        self.player.OwnedProprietyIDs.sort(reverse=True)
         return \
             [
                 self.AI.Budget(),
