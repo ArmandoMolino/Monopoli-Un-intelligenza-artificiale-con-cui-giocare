@@ -1,4 +1,4 @@
-#!/Path to/MonopolyVenv/bin/python
+#!/home/a.molino/progetto/MonopoliVenv/bin/python
 import glob
 import os
 import tarfile
@@ -7,10 +7,8 @@ import getopt
 import re
 
 from Monopoly import MonopolyEnv
-from FuzzyQLearning import StateVariable
-from FuzzyQLearning import FuzzySet
-from FuzzyQLearning import FQL
-from FuzzyQLearning import FIS
+from FuzzyQLearning.QLearning import FQL, FDQL
+from FuzzyQLearning.Fuzzy import FIS, StateVariable, FuzzySet
 
 from Monopoly.Players.AverangePlayer import AverangePlayer
 from Stat import Stat
@@ -114,9 +112,8 @@ def Training(model, stat, episodes=1000, start=0, print_info=100, save=False, sa
 
     return stat
 
-
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ls:pr", ["load", "save=", "plot", "render", "no_log"])
+    opts, args = getopt.getopt(sys.argv[1:], "ls:dpr", ["load", "save=", "doubleQ", "plot", "render", "no_log"])
 except getopt.GetoptError as err:
     print(err)
     sys.exit(2)
@@ -124,8 +121,8 @@ except getopt.GetoptError as err:
 save = False
 load = False
 plot = False
-training = False
 render = False
+double = False
 log = True
 save_step = 0
 i = 0
@@ -136,6 +133,8 @@ for o, a in opts:
     if o in ["-s", "--save"]:
         save = True
         save_step = int(a)
+    if o in ["-d", "--doubleQ"]:
+        double = True
     if o in ["-p", "--plot"]:
         plot = True
     if o in ["-r", "--render"]:
@@ -149,8 +148,9 @@ if len(args) < 4:
 
 episode, gamma, alpha, ee_rate = int(args[0]), float(args[1]), float(args[2]), float(args[3])
 
-model = FQL.Model(gamma=gamma, alpha=alpha, ee_rate=ee_rate, action_set_length=env.action_space.n,
-                  q_initial_value="zeros", fis=fis)
+model = FQL.Model(gamma=gamma, alpha=alpha, ee_rate=ee_rate, action_set_length=env.action_space.n, q_initial_value="zeros", fis=fis)
+if double:
+    model = FDQL.Model(gamma=gamma, alpha=alpha, ee_rate=ee_rate, action_set_length=env.action_space.n, q_initial_value="zeros", fis=fis)
 
 stat = (Stat(episode, label=model))
 
