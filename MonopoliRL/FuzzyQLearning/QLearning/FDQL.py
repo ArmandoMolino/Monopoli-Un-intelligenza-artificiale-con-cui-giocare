@@ -121,9 +121,10 @@ class Model(object):
         self.KeepStateHistory()
         return action
 
-    def policy(self, state):
+    def Policy(self, state):
         self.CalculateTruthValue(state)
-        self.ActionSelection()
+        self.M = []
+        self.policy(self.ee_rate, self.M, (self.q_tables[0] + self.q_tables[1]) / 2)
         return self.InferredAction()
 
 
