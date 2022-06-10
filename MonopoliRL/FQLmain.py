@@ -71,7 +71,7 @@ def Save(m, s, e):
     tar.close()
 
 
-def Training(model, stat, episodes=1000, start=0, print_info=100, save=False, save_step=0, record_stat=False,
+def Training(model, stat, episodes=1000, start=0, print_info=100, save=False, save_step=0, record_stat=True,
              render=False,
              log=True):
     for i_episode in range(start, start + episodes):
