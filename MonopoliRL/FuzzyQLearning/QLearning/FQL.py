@@ -114,7 +114,7 @@ class Model(object):
         self.KeepStateHistory()
         return action
 
-    def policy(self, state):
+    def Policy(self, state):
         self.CalculateTruthValue(state)
         self.ActionSelection()
         return self.InferredAction()
