@@ -76,7 +76,7 @@ def Training(model, stat, episodes=1000, start=0, print_info=100, save=False, sa
              log=True):
     for i_episode in range(start, start + episodes):
         if i_episode % print_info == 0:
-            print("\rEpisode {}/{}.".format(i_episode, episodes))
+            print("\rEpisode {}/{}.".format(i_episode, start + episodes))
             sys.stdout.flush()
         if save and (i_episode % save_step == 0):
             Save(model, stat, i_episode)
