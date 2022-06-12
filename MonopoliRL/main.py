@@ -86,7 +86,7 @@ def Load(m, s, dir='') -> int:
 
 
 def Save(m, s, e, dir=''):
-    m.save(dir)
+    os.makedirs(dir, exist_ok=True)
     s.save(dir)
     file = glob.glob(f'{dir}*{m}.tar.gz')
     try:
