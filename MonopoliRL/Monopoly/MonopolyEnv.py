@@ -208,4 +208,17 @@ class env:
             ]
 
     def render(self):
-        pass
+        if not self.board:
+            Board.instance().StartGame(blocks=self.blocks, AI=self.AI, player=self.player)
+            Board.instance().blockSpriteGroup.update()
+            pygame.display.update()
+            self.board = True
+        else:
+            # creates time delay of 10ms
+            pygame.time.delay(10)
+
+            Board.instance().update(
+                'Azione all\'inizio del Turno\n{}\nAzione alla fine del Turno\n{}'.format(self.log['AI']['StartTurn'],
+                                                                                          self.log['AI']['EndTurn']),
+                'Azione all\'inizio del Turno\n{}\nAzione alla fine del Turno\n{}'.format(
+                    self.log['player']['StartTurn'], self.log['player']['EndTurn']))
