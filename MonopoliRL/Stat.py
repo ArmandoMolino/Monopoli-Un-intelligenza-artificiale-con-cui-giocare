@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.ticker import FormatStrFormatter, MultipleLocator
 
 
 class Stat(object):
@@ -45,7 +46,6 @@ class Stat(object):
         win_rate={self._win_rate} \n \
         _win_block={self._win_block}'
 
-
     def save(self, dir=''):
         with open(f'{dir}episode_lengths{self.label}.npy', 'wb') as f:
             np.save(f, self._episode_lengths)
@@ -61,10 +61,10 @@ class Stat(object):
 
     def load(self, dir=''):
         with open(f'{dir}episode_lengths{self.label}.npy', 'rb') as f:
-            self._episode_lengths = np.load(f)
+            self._episode_lengths = np.concatenate((np.load(f), self._episode_lengths), axis=0)
 
         with open(f'{dir}episode_rewards{self.label}.npy', 'rb') as f:
-            self._episode_rewards = np.load(f)
+            self._episode_rewards = np.concatenate((np.load(f), self._episode_rewards), axis=0)
 
         with open(f'{dir}win_rate{self.label}.npy', 'rb') as f:
             self._win_rate = np.load(f)
@@ -115,6 +115,12 @@ class Stat(object):
 
             fig, axs = plt.subplots()
             rewards_smoothed = [np.array(pd.Series(s._episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean()) for s in stats]
+            smoothing_window = smoothing_window if smoothing_window > 10000 else 15000
+            axs.xaxis.set_major_locator(MultipleLocator(smoothing_window*2))
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+            axs.xaxis.set_minor_locator(MultipleLocator(smoothing_window*2/3))
+            axs.yaxis.set_major_locator(MultipleLocator(0.10))
+            axs.yaxis.set_minor_locator(MultipleLocator(0.10/3))
             cls._plot(axs, rewards_smoothed, [s.label for s in stats], "Ricompense per episodio", "Episodio", "Ricompensa Totale",
                           title_font=title_font, ax_font=ax_font)
             show_plt()
@@ -139,6 +145,8 @@ class Stat(object):
             else:
                 bar.append(ax.bar(x + (i - math.floor(len(d)/2)) * width, k, width))
 
+        for bars in ax.containers:
+            ax.bar_label(bars)
         ax.set_title(title, fontdict=title_font)
 
         ax.set_xlabel(xlabel, fontdict=ax_font)
@@ -146,13 +154,13 @@ class Stat(object):
 
         x = np.arange(0, len(label) * np.ceil(len(d)/2), np.ceil(len(d)/2))
         ax.set_xticks(x, label)
-        ax.grid(visible=True)
+        ax.grid(which='major', visible=True)
+        ax.grid(which='minor', linestyle='--', visible=True)
 
     @classmethod
     def _plot(cls, ax, data, label, title, xlabel, ylabel, labelsize=12, title_font=None, ax_font=None):
 
         ax.tick_params(axis='both', which='major', labelsize=labelsize)
-
         for i, d in enumerate(data):
             ax.plot(d)
 
@@ -161,4 +169,5 @@ class Stat(object):
         ax.set_xlabel(xlabel, fontdict=ax_font)
         ax.set_ylabel(ylabel, fontdict=ax_font)
 
-        ax.grid(visible=True)
+        ax.grid(which='major', visible=True)
+        ax.grid(which='minor', linestyle='--', visible=True)
