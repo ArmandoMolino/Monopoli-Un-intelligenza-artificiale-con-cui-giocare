@@ -20,7 +20,6 @@ Action:
 """
 
 import numpy as np
-import pygame
 from gym import spaces
 
 from Monopoly.Blocks.MonopolyBlocks import Blocks, EventBlock, Land
