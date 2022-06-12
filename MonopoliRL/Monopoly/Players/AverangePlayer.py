@@ -15,14 +15,14 @@ class AverangePlayer(APlayer):
 
     def BuyBehavior(self, propriety: MonopolyBlocks.APropriety, price) -> bool:
         n, tot = propriety.NumberInSeries()
-        if self._recentTrade[propriety.id] == 0 and n <= int(tot/2) and self.budgetWindow < (self._budget - price):
+        if self._recentTrade[propriety.id] == 0 and n <= int(tot/2) and self.budgetWindow * 0.75 < (self._budget - price):
             self._recentTrade[propriety.id] = self.tradeCountdown
             return True
         return False
 
     def SellBehavior(self, propriety: MonopolyBlocks.APropriety, price) -> bool:
         n, tot = propriety.NumberInSeries()
-        minSellPrice = propriety.Price() * (1.25 if self._budget < self.budgetWindow else 0.5)
+        minSellPrice = propriety.Price() * (1.25 if self._budget < self.budgetWindow * 0.75 else 0.5)
         if self._recentTrade[propriety.id] == 0 and n <= int(tot/2) and minSellPrice <= price:
             self._recentTrade[propriety.id] = self.tradeCountdown
             return True
