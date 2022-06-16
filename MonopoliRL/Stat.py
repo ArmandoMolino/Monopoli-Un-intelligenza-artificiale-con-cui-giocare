@@ -1,5 +1,7 @@
+import copy
 import math
 import os
+import re
 
 import numpy as np
 import pandas as pd
@@ -61,10 +63,12 @@ class Stat(object):
 
     def load(self, dir=''):
         with open(f'{dir}episode_lengths{self.label}.npy', 'rb') as f:
-            self._episode_lengths = np.concatenate((np.load(f), self._episode_lengths), axis=0)
+            temp = np.trim_zeros(np.load(f))
+            self._episode_lengths = np.concatenate((temp, self._episode_lengths), axis=0)
 
         with open(f'{dir}episode_rewards{self.label}.npy', 'rb') as f:
-            self._episode_rewards = np.concatenate((np.load(f), self._episode_rewards), axis=0)
+            temp = np.resize(np.load(f), self._episode_lengths.shape)
+            self._episode_rewards = np.concatenate((temp, self._episode_rewards), axis=0)
 
         with open(f'{dir}win_rate{self.label}.npy', 'rb') as f:
             self._win_rate = np.load(f)
@@ -89,7 +93,7 @@ class Stat(object):
             self._win_block[parserID[id]] += 1
 
     @classmethod
-    def plot_stats(cls, stats, width=0.85, noshow=False, title_font=None, ax_font=None, smoothing_window=100):
+    def plot_stats(cls, stats, legend=None, width=0.85, noshow=False, title_font=None, ax_font=None, smoothing_window=100):
         if ax_font is None:
             ax_font = {'family': 'serif', 'color': 'black', 'size': 18}
         if title_font is None:
@@ -103,30 +107,30 @@ class Stat(object):
         with plt.style.context("ggplot"):
             fig, axs = plt.subplots()
             cls._plot_bar(axs, [s._win_rate for s in stats], stats[0]._winRateLabel,
-                          "Probabilità di vittoria", "Giocatore", "Probabilità", width=width,
+                          "Probabilità di vittoria", "Giocatore", "Probabilità", legend=legend, width=width,
                           title_font=title_font, ax_font=ax_font)
             show_plt()
 
             fig, axs = plt.subplots()
             cls._plot_bar(axs, [s._win_block for s in stats],  stats[0]._blockLabel,
-                          "Probabilità di vittoria", "Giocatore", "Probabilità", width=width,
+                          "Probabilità di vittoria", "Giocatore", "Probabilità", legend=legend, width=width,
                           title_font=title_font, ax_font=ax_font)
             show_plt()
 
             fig, axs = plt.subplots()
             rewards_smoothed = [np.array(pd.Series(s._episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean()) for s in stats]
-            smoothing_window = smoothing_window if smoothing_window > 10000 else 15000
-            axs.xaxis.set_major_locator(MultipleLocator(smoothing_window*2))
-            axs.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-            axs.xaxis.set_minor_locator(MultipleLocator(smoothing_window*2/3))
-            axs.yaxis.set_major_locator(MultipleLocator(0.10))
-            axs.yaxis.set_minor_locator(MultipleLocator(0.10/3))
-            cls._plot(axs, rewards_smoothed, [s.label for s in stats], "Ricompense per episodio", "Episodio", "Ricompensa Totale",
-                          title_font=title_font, ax_font=ax_font)
+            cls._plot(axs, rewards_smoothed, "Ricompense per episodio", "Episodio", "Ricompensa Totale", legend=legend,
+                          title_font=title_font, ax_font=ax_font, tick=max([len(s._episode_rewards) for s in stats])/10)
+            show_plt()
+
+            fig, axs = plt.subplots()
+            lengths_smoothed = [np.array(pd.Series(s._episode_lengths).rolling(smoothing_window, min_periods=smoothing_window).mean()) for s in stats]
+            cls._plot(axs, lengths_smoothed, "Durata episodi", "Episodio", "T", legend=legend,
+                          title_font=title_font, ax_font=ax_font, tick=max([len(s._episode_lengths) for s in stats])/10)
             show_plt()
 
     @classmethod
-    def _plot_bar(cls, ax, data, label, title, xlabel, ylabel, width=0.85, probabilities=True, labelsize=10, title_font=None, ax_font=None):
+    def _plot_bar(cls, ax, data, label, title, xlabel, ylabel, legend=None, width=0.85, probabilities=True, labelsize=10, title_font=None, ax_font=None):
         d = []
         for i, k in enumerate(data):
             n = k.sum()
@@ -139,7 +143,7 @@ class Stat(object):
         c = width/2
         bar = []
         for i, k in enumerate(d):
-            x = np.arange(0, len(k) * np.ceil(len(d)/2), np.ceil(len(d)/2))
+            x = np.arange(0, len(k) * len(d), len(d))
             if len(d) % 2 == 0:
                 bar.append(ax.bar(x + c + (i - len(d)/2) * width, k, width))
             else:
@@ -152,22 +156,30 @@ class Stat(object):
         ax.set_xlabel(xlabel, fontdict=ax_font)
         ax.set_ylabel(ylabel, fontdict=ax_font)
 
-        x = np.arange(0, len(label) * np.ceil(len(d)/2), np.ceil(len(d)/2))
+        x = np.arange(0, len(label) * len(d), len(d))
         ax.set_xticks(x, label)
         ax.grid(which='major', visible=True)
         ax.grid(which='minor', linestyle='--', visible=True)
+        if len(data) > 0 and legend is not None:
+            ax.legend(labels=legend, fontsize=15)
 
     @classmethod
-    def _plot(cls, ax, data, label, title, xlabel, ylabel, labelsize=12, title_font=None, ax_font=None):
+    def _plot(cls, ax, data, title, xlabel, ylabel, legend=None, labelsize=12, title_font=None, ax_font=None, tick=100):
+
+        ax.xaxis.set_major_locator(MultipleLocator(tick))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+        ax.xaxis.set_minor_locator(MultipleLocator(tick / 3))
 
         ax.tick_params(axis='both', which='major', labelsize=labelsize)
         for i, d in enumerate(data):
             ax.plot(d)
 
         ax.set_title(title, fontdict=title_font)
-        ax.legend(labels=label, fontsize=15)
         ax.set_xlabel(xlabel, fontdict=ax_font)
         ax.set_ylabel(ylabel, fontdict=ax_font)
 
         ax.grid(which='major', visible=True)
         ax.grid(which='minor', linestyle='--', visible=True)
+        if len(data) > 0 and legend is not None:
+            ax.legend(labels=legend, fontsize=15)
+
