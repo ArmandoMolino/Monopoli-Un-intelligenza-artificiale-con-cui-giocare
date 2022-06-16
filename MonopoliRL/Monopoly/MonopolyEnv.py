@@ -23,7 +23,6 @@ import numpy as np
 import pygame
 from gym import spaces
 
-from Monopoly.Board.MonopolyBoard import Board
 from Monopoly.Blocks.MonopolyBlocks import Blocks, EventBlock, Land
 from Monopoly.Players.AverangePlayer import AverangePlayer
 from Monopoly.Players.Player_ import Player
@@ -209,6 +208,7 @@ class env:
             ]
 
     def render(self):
+        from Monopoly.Board.MonopolyBoard import Board
 
         if not self.board:
             Board.instance().StartGame(blocks=self.blocks, AI=self.AI, player=self.player)

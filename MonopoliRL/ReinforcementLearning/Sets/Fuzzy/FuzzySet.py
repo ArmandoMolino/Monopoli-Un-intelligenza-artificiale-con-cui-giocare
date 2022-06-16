@@ -53,6 +53,11 @@ class Estate(object):
     def membership_value(self, input_value):
         if isinstance(input_value, list):
             input_value = set(input_value)
+        if not self.set:
+            if not input_value:
+                return 1.0
+            else:
+                return 0
 
         input_value = input_value.intersection(self.set)
         if self.set == input_value:

@@ -10,6 +10,33 @@ from Monopoly.Blocks.MonopolyBlocks import Land, EventBlock
 
 
 class Board:
+    _scale_factor = 1
+    _instance = None
+
+    blockSpriteGroup = pygame.sprite.Group()
+    playerSpriteGroup = pygame.sprite.Group()
+
+    blockSpritePath = {}
+    pieceSpritePath = {}
+    buttonSpritePath = {}
+
+    items = []
+    game_area = [pygame.Rect(0, math.ceil(25 / _scale_factor), math.ceil(175 / _scale_factor), math.ceil(1025 / _scale_factor)),
+                 pygame.Rect(math.ceil(850 / _scale_factor), math.ceil(25 / _scale_factor), math.ceil(150 / _scale_factor), math.ceil(975 / _scale_factor)),
+                 pygame.Rect(math.ceil(175 / _scale_factor), math.ceil(25 / _scale_factor), math.ceil(675 / _scale_factor), math.ceil(150 / _scale_factor)),
+                 pygame.Rect(math.ceil(175 / _scale_factor), math.ceil(850 / _scale_factor), math.ceil(675 / _scale_factor), math.ceil(150 / _scale_factor))]
+    AI = None
+    AI_text = None
+
+    player = None
+    player_text = None
+
+    startTurnbutton = None
+    start10Turnbutton = None
+    startUntilEndbutton = None
+
+    skip = 0
+
     class _BlockSprite(pygame.sprite.Sprite):
 
         def update(self, *argv) -> None:
@@ -36,7 +63,7 @@ class Board:
             super(Board._BlockSprite, self).__init__()
             self.path = path
             self.image = pygame.image.load(path)
-            self.image = pygame.transform.scale(self.image, (int(self.image.get_width()/1.35), int(self.image.get_height()/1.35)))
+            self.image = pygame.transform.scale(self.image, (self.image.get_width() // Board._scale_factor, self.image.get_height() // Board._scale_factor))
             self.image_original = self.image.copy()
 
             self.rect = self.image.get_rect()
@@ -54,29 +81,43 @@ class Board:
 
         def draw_house(self):
             def get_HousesPos():
-                if self.degree == 90:
-                    return self.rect.width - 20, 4
-                elif self.degree == 180:
-                    return 4, self.rect.height - 20
-                elif self.degree == 270:
-                    return 8, 4
-                return 4, 8
+                _x, _y = 0, 0
+                offset = 8 // Board._scale_factor
+                width = 6 // Board._scale_factor
+
+                if self.degree == 90:#topright
+                    _x, _y = self.rect.width, width - 1
+                    _x -= offset
+
+                elif self.degree == 180:#botright
+                    _x, _y = self.rect.width - width, self.rect.height
+                    _y -= offset
+
+                elif self.degree == 270:#botleft
+                    _x, _y = 0, self.rect.height - width
+                    _x += offset
+
+                else: # topleft
+                    _x, _y = width - 1, -1
+                    _y += offset
+
+                return _x, _y
 
             def get_house_points():
                 points = [
-                    (x + 5, y),
-                    (x + 7, y + 2),
-                    (x + 7, y + 1),
-                    (x + 8, y + 1),
-                    (x + 8, y + 3),
-                    (x + 10, y + 5),
-                    (x + 8, y + 5),
-                    (x + 8, y + 10),
-                    (x + 2, y + 10),
-                    (x + 2, y + 5),
-                    (x, y + 5)
+                    (x + 5 // Board._scale_factor, y),
+                    (x + 7 // Board._scale_factor, y + 2 // Board._scale_factor),
+                    (x + 7 // Board._scale_factor, y + 1 // Board._scale_factor),
+                    (x + 8 // Board._scale_factor, y + 1 // Board._scale_factor),
+                    (x + 8 // Board._scale_factor, y + 3 // Board._scale_factor),
+                    (x + 10 // Board._scale_factor, y + 5 // Board._scale_factor),
+                    (x + 8 // Board._scale_factor, y + 5 // Board._scale_factor),
+                    (x + 8 // Board._scale_factor, y + 10 // Board._scale_factor),
+                    (x + 2 // Board._scale_factor, y + 10 // Board._scale_factor),
+                    (x + 2 // Board._scale_factor, y + 5 // Board._scale_factor),
+                    (x, y + 5 // Board._scale_factor)
                 ]
-                centerx, centery = x + 5, y + 5
+                centerx, centery = x, y
                 for i, h in enumerate(points):
                     temp = (h[0] - centerx) * round(math.cos(math.radians(self.degree))) - (h[1] - centery) \
                            * round(math.sin(math.radians(self.degree))) + centerx, (h[0] - centerx) * round(
@@ -87,7 +128,7 @@ class Board:
 
             if self.house < 5:
                 x, y = get_HousesPos()
-                offset = self.house * 14
+                offset = self.house * 14 // Board._scale_factor
                 if self.degree in [270, 90]:
                     y = y + offset
                 else:
@@ -99,24 +140,38 @@ class Board:
 
         def draw_OwnerFlag(self, color):
             def get_OwnerFlagPos():
-                if self.degree == 90:
-                    return self.rect.width - 38, -10
-                elif self.degree == 180:
-                    return self.rect.width - 9, (self.rect.height / 2)
-                elif self.degree == 270:
-                    return 38, 28
-                return 8, 20
+                _x, _y = 0, 0
+                offset = 27 // Board._scale_factor
+                width = 9 // Board._scale_factor
+
+                if self.degree == 90:#topright
+                    _x, _y = self.rect.width, width - 1
+                    _x -= offset
+
+                elif self.degree == 180:#botright
+                    _x, _y = self.rect.width - width, self.rect.height
+                    _y -= offset
+
+                elif self.degree == 270:#botleft
+                    _x, _y = 0, self.rect.height - width
+                    _x += offset
+
+                else: # topleft
+                    _x, _y = width - 1, -1
+                    _y += offset
+
+                return _x, _y
 
             def get_ownerFlag_points():
                 points = [
-                    (x - 6, y),
+                    (x - 6 // Board._scale_factor, y),
                     (x, y),
-                    (x + 6, y),
-                    (x + 6, y + 36),
-                    (x, y + 30),
-                    (x - 6, y + 36)
+                    (x + 6 // Board._scale_factor, y),
+                    (x + 6 // Board._scale_factor, y + 36 // Board._scale_factor),
+                    (x, y + 30 // Board._scale_factor),
+                    (x - 6 // Board._scale_factor, y + 36 // Board._scale_factor)
                 ]
-                centerx, centery = x, y + 18
+                centerx, centery = x, y
                 for i, h in enumerate(points):
                     temp = (h[0] - centerx) * round(math.cos(math.radians(self.degree))) - (h[1] - centery) \
                            * round(math.sin(math.radians(self.degree))) + centerx, (h[0] - centerx) * round(
@@ -181,10 +236,8 @@ class Board:
 
             self.path = path
             self.image = pygame.image.load(path)
-            self.image = pygame.transform.scale(self.image, (int(self.image.get_width()/1.40), int(self.image.get_height()/1.40)))
+            self.image = pygame.transform.scale(self.image, (self.image.get_width() // (Board._scale_factor * 1.75), self.image.get_height() // (Board._scale_factor * 1.75)))
             self.image_original = self.image.copy()
-            if size is not None:
-                self.image = pygame.transform.scale(self.image, size)
 
             self.player = player
 
@@ -332,32 +385,6 @@ class Board:
                         return True
             return False
 
-    _instance = None
-
-    blockSpriteGroup = pygame.sprite.Group()
-    playerSpriteGroup = pygame.sprite.Group()
-
-    blockSpritePath = {}
-    pieceSpritePath = {}
-    buttonSpritePath = {}
-
-    items = []
-    game_area = [pygame.Rect(math.ceil(25/1.35), math.ceil(25/1.35), math.ceil(150/1.35), math.ceil(975/1.35)), 
-                 pygame.Rect(math.ceil(850/1.35), math.ceil(25/1.35), math.ceil(150/1.35), math.ceil(975/1.35)), 
-                 pygame.Rect(math.ceil(175/1.35), math.ceil(25/1.35), math.ceil(675/1.35), math.ceil(150/1.35)),
-                 pygame.Rect(math.ceil(175/1.35), math.ceil(850/1.35), math.ceil(675/1.35), math.ceil(150/1.35))]
-    AI = None
-    AI_text = None
-
-    player = None
-    player_text = None
-
-    startTurnbutton = None
-    start10Turnbutton = None
-    startUntilEndbutton = None
-
-    skip = 0
-
     @classmethod
     def instance(cls):
         if cls._instance is None:
@@ -369,10 +396,10 @@ class Board:
             # instanza le caselle
             b = 0
 
-            b = PrintLine(paths=paths, index=b, x=math.ceil(925/1.35)-8, y=math.ceil(925/1.35)-8, degree=0)
-            b = PrintLine(paths=paths, index=b, x=math.ceil(100/1.35), y=math.ceil(925/1.35)-8, degree=270)
-            b = PrintLine(paths=paths, index=b, x=math.ceil(100/1.35), y=math.ceil(100/1.35), degree=180)
-            PrintLine(paths=paths, index=b, x=math.ceil(925/1.35)-8, y=math.ceil(100/1.35), degree=90)
+            b = PrintLine(paths=paths, index=b, x=921 // Board._scale_factor, y=921 // Board._scale_factor, degree=0)
+            b = PrintLine(paths=paths, index=b, x=100 // Board._scale_factor, y=921 // Board._scale_factor, degree=270)
+            b = PrintLine(paths=paths, index=b, x=100 // Board._scale_factor, y=100 // Board._scale_factor, degree=180)
+            PrintLine(paths=paths, index=b, x=921 // Board._scale_factor, y=100 // Board._scale_factor, degree=90)
             cls.items = cls.blockSpriteGroup.sprites()
 
         def PrintLine(paths, index, x, y, degree=0, offset=0):
@@ -410,7 +437,7 @@ class Board:
             return cls.RestartGame(blocks, AI, player)
 
         pygame.init()
-        cls.screen = pygame.display.set_mode((int(1225/1.35), int(1025/1.35)), pygame.RESIZABLE)
+        cls.screen = pygame.display.set_mode((int(1225/Board._scale_factor), int(1025/Board._scale_factor)), pygame.RESIZABLE)
         cls.screen.fill('olivedrab3')
 
         with open('Monopoly/Board/Sprite/SpriteData.json') as json_file:
@@ -434,7 +461,7 @@ class Board:
                                     offset=offset,
                                     size=(50, 50),
                                     vel=0.5)
-        cls.AI_text = Board._PlayerGameInfo('AI', AI.color, (int(200/1.35), int(200/1.35)))
+        cls.AI_text = Board._PlayerGameInfo('AI', AI.color, (int(200/Board._scale_factor), int(200/Board._scale_factor)))
         cls.AI_text.ShowText(cls.screen, f'Budget={AI.Budget()}')
 
         startCenter = cls.items[player.position].get_center()
@@ -448,13 +475,15 @@ class Board:
                                         offset=offset,
                                         size=(50, 50),
                                         vel=0.5)
-        cls.player_text = Board._PlayerGameInfo('player', player.color, (int(200/1.35), int(500/1.35)))
+        cls.player_text = Board._PlayerGameInfo('player', player.color, (int(200/Board._scale_factor), int(500/Board._scale_factor)))
         cls.player_text.ShowText(cls.screen, f'Budget={player.Budget()}')
 
+        # posizione passagio prigione
         cls.items[10].position_for_player = (
             round(abs((cls.items[10].rect.left - cls.items[10].rect.centerx) * 2) / 3) + cls.items[10].rect.left,
             round(- abs((cls.items[10].rect.bottom - cls.items[10].rect.centery) * 2) / 3) + cls.items[10].rect.bottom)
 
+        # posizione prigione
         cls.prisonLocation = (
             round(abs(cls.items[10].rect.right - cls.items[10].rect.centerx) / 2) + cls.items[10].rect.centerx,
             round(abs(cls.items[10].rect.top - cls.items[10].rect.centery) / 2) + cls.items[10].rect.top)
@@ -464,15 +493,15 @@ class Board:
         cls.playerSpriteGroup.draw(cls.screen)
 
         # instanza i pulsanti
-        cls.startTurnbutton = Board._Button("Prossimo Round", (int(1012/1.35), 100), path=cls.buttonSpritePath['red'])
+        cls.startTurnbutton = Board._Button("Prossimo Round", (int(1012/Board._scale_factor), 100), path=cls.buttonSpritePath['red'])
         cls.screen.fill('olivedrab3', cls.startTurnbutton.rect)
         cls.startTurnbutton.show(cls.screen)
 
-        cls.start10Turnbutton = Board._Button("Prossimi 10 Round", (int(1012/1.35), 205), path=cls.buttonSpritePath['blue'])
+        cls.start10Turnbutton = Board._Button("Prossimi 10 Round", (int(1012/Board._scale_factor), 205), path=cls.buttonSpritePath['blue'])
         cls.screen.fill('olivedrab3', cls.start10Turnbutton.rect)
         cls.start10Turnbutton.show(cls.screen)
 
-        cls.startUntilEndbutton = Board._Button("Fino alla fine", (int(1012/1.35), 310), path=cls.buttonSpritePath['blue'])
+        cls.startUntilEndbutton = Board._Button("Fino alla fine", (int(1012/Board._scale_factor), 310), path=cls.buttonSpritePath['blue'])
         cls.screen.fill('olivedrab3', cls.startUntilEndbutton.rect)
         cls.startUntilEndbutton.show(cls.screen)
 
@@ -505,15 +534,15 @@ class Board:
         cls.playerSpriteGroup.draw(cls.screen)
         pygame.display.update()
 
-        cls.startTurnbutton = Board._Button("Prossimo Round", (1012, 100), path=cls.buttonSpritePath['red'])
+        cls.startTurnbutton = Board._Button("Prossimo Round", (int(1012/Board._scale_factor), 100), path=cls.buttonSpritePath['red'])
         cls.screen.fill('olivedrab3', cls.startTurnbutton.rect)
         cls.startTurnbutton.show(cls.screen)
 
-        cls.start10Turnbutton = Board._Button("Prossimi 10 Round", (1012, 205), path=cls.buttonSpritePath['blue'])
+        cls.start10Turnbutton = Board._Button("Prossimi 10 Round", (int(1012/Board._scale_factor), 205), path=cls.buttonSpritePath['blue'])
         cls.screen.fill('olivedrab3', cls.start10Turnbutton.rect)
         cls.start10Turnbutton.show(cls.screen)
 
-        cls.startUntilEndbutton = Board._Button("Fino alla fine", (1012, 310), path=cls.buttonSpritePath['blue'])
+        cls.startUntilEndbutton = Board._Button("Fino alla fine", (int(1012/Board._scale_factor), 310), path=cls.buttonSpritePath['blue'])
         cls.screen.fill('olivedrab3', cls.startUntilEndbutton.rect)
         cls.startUntilEndbutton.show(cls.screen)
 

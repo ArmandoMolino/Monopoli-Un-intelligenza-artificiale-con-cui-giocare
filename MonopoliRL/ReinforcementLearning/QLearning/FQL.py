@@ -1,7 +1,7 @@
 import numpy as np
 
-from FuzzyQLearning.Fuzzy import FIS
-from FuzzyQLearning.QLearning import Policy
+from ReinforcementLearning.Sets.Fuzzy import FIS
+from ReinforcementLearning.QLearning import Policy
 import operator
 import itertools
 import functools
@@ -16,7 +16,6 @@ class Model(object):
     Q = 0
     V = 0
     Error = 0
-    q_table = np.matrix([])
 
     def __init__(self, gamma, alpha, ee_rate, action_set_length, q_initial_value='zeros',
                  fis=FIS.Build(), policy=Policy.epsilon_greedy):
@@ -27,6 +26,7 @@ class Model(object):
         self.q_initial_value = q_initial_value
         self.action_set_length = action_set_length
         self.fis = fis
+        self.q_table = np.matrix([])
 
         self.policy = policy
 
