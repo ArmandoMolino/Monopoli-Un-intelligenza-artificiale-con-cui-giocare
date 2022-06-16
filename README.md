@@ -1,4 +1,5 @@
-# Monopoly-Reinforcement-Learning
+# Monopoli: Un’intelligenza artificiale con cui giocare
+
 Usage: ./FQLmain.py (options) episodes gamma alpha ee_rate
 
 options:
