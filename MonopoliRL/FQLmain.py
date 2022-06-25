@@ -41,15 +41,16 @@ def Make_FIS_with_fuzzy_set():
     return FIS.Build(x1, x2, x3, x4, x3, x4)
 
 def Make_FIS_with_crisp_set():
-    x1 = StateVariable.InputStateVariable(CrispSet.Alfa_Cut(FuzzySet.Trapeziums(0, 750, 1250, 1500), 0.5),
-                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(1250, 1500, 2250, 2750), 0.5),
-                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(2250, 2750, 3750, 4000), 0.5))
+    x1 = StateVariable.InputStateVariable(CrispSet.Support(FuzzySet.Trapeziums(0, 750, 1250, 1500)),
+                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(1250, 1500, 2250, 2750), 0.75),
+                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(2250, 2750, 3750, 4000), 0.75))
 
-    x2 = StateVariable.InputStateVariable(CrispSet.Alfa_Cut(FuzzySet.Triangles(0, 1000, 1250), 0.5),
-                                          CrispSet.Alfa_Cut(FuzzySet.Triangles(1000, 1250, 1700), 0.5),
-                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(1250, 1700, 4000, 4000), 0.5))
+    x2 = StateVariable.InputStateVariable(CrispSet.Support(FuzzySet.Triangles(0, 1000, 1250)),
+                                          CrispSet.Alfa_Cut(FuzzySet.Triangles(1000, 1250, 1700), 0.75),
+                                          CrispSet.Alfa_Cut(FuzzySet.Trapeziums(1250, 1700, 4000, 4000), 0.75))
 
-    x3 = StateVariable.InputStateVariable(CrispSet.Core(FuzzySet.Estate([1, 3])),
+    x3 = StateVariable.InputStateVariable(CrispSet.Core(FuzzySet.Estate([])),
+                                          CrispSet.Core(FuzzySet.Estate([1, 3])),
                                           CrispSet.Core(FuzzySet.Estate([6, 8, 9])),
                                           CrispSet.Core(FuzzySet.Estate([11, 13, 14])),
                                           CrispSet.Core(FuzzySet.Estate([16, 18, 19])),
