@@ -24,8 +24,7 @@ def Make_FIS_with_fuzzy_set():
                                           FuzzySet.Triangles(1000, 1250, 1700),
                                           FuzzySet.Trapeziums(1250, 1700, 4000, 4000))
 
-    x3 = StateVariable.InputStateVariable(FuzzySet.Estate([]),
-                                          FuzzySet.Estate([1, 3]),
+    x3 = StateVariable.InputStateVariable(FuzzySet.Estate([1, 3]),
                                           FuzzySet.Estate([6, 8, 9]),
                                           FuzzySet.Estate([11, 13, 14]),
                                           FuzzySet.Estate([16, 18, 19]),
